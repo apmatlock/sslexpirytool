@@ -2,18 +2,20 @@ import OpenSSL
 import ssl, socket
 import sqlite3
 
+#sql junk ...needs to be moved into it's own file
+sql_create_hosts_table = """ CREATE TABLE IF NOT EXISTS hosts (
+                                        id integer PRIMARY KEY,
+                                        subject_name text,
+                                        dated_added text,
+                                        expiry_date text
+                                    ); """
+
+
 conn = sqlite3.connect('ssl_hosts.db')
-f = open("ssl-list.csv", "a")
-
 c = conn.cursor()
+c.execute(sql_create_hosts_table)
 
-c.execute(''' SELECT count(ip) FROM sqlite_master WHERE type='table' AND name='host' ''')
-
-if c.fetchone()[0]:
-    print('table exists')
-else:
-    c.execute('''CREATE TABLE hosts (date text, trans text, symbol text, qty real, price real)''')
-
+f = open("ssl-list.csv", "a")
 
 with open("hostnames.txt", "r") as fr:
     for ip in fr:
